@@ -5,7 +5,6 @@ const Function = () => {
     return (
         <div>
             <Header />
-            <Authorization />
         </div>
     )
 }

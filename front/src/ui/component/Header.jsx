@@ -3,13 +3,13 @@ import {AtlantContext} from "../../core/context.jsx";
 import {Link} from "react-router-dom";
 
 const Header = () => {
-    const {isAuthorized, logout} = useContext(AtlantContext);
+    const {sender, logout} = useContext(AtlantContext);
 
     return (
         <div className="navbar" style={{background: "#ac6aee", color: "white", padding: "15px"}}>
-            <h2> Waves Post Office</h2>
+            <h2> Export-Oriented-Manufacturing</h2>
             {
-                isAuthorized === false ?
+                !sender ?
                     <>
                         <Link to="/" style={{color:"white"}} className="btn">страница авторизации</Link>
                     </> :

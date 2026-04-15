@@ -1,4 +1,4 @@
-import { Table, Card } from "react-bootstrap";
+import {Table, Card, FormControl, Col, Row, Container} from "react-bootstrap";
 import Header from "../component/Header.jsx";
 import { AtlantContext } from "../../core/context.jsx";
 import {useContext, useEffect, useState} from "react";
@@ -6,6 +6,8 @@ import {useContext, useEffect, useState} from "react";
 const UserCard = () => {
     const { contractId } = useContext(AtlantContext);
     const [data, setData] = useState([]);
+    const [role, setRole] = useState("");
+    const [wallet, setWallet] = useState("");
 
     useEffect(() => {
         (async () => {
@@ -20,24 +22,40 @@ const UserCard = () => {
             <Header />
 
             <div className="container">
-                <h2>Личный кабинет</h2>
+                <h2>найти определённого пользователя</h2>
 
-                <Card>
-                    <Table>
-                        <tbody>
+                    <FormControl
+                        placeholder="key"
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                    />
+
+                    <FormControl
+                        placeholder="value"
+                        value={wallet}
+                        onChange={(e) => setWallet(e.target.value)}
+                    />
+
+                <Container>
+                    <Row>
                         {data
-                            .filter(i => i.key.includes(role) && i.value.includes(wallet)) // тут страницчка дожна принимать эти значение с инпута и после этого отрисовавать страницу
-                            .map((item, index) => (
-                                <tr key={index}>
-                                    <td>
-                                        <pre>{JSON.stringify(JSON.parse(item.value), null, 2).replace(/[{}"]/g, "")}</pre>
-                                    </td>
-
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </Card>
+                            .filter(i => i.key.includes(role) && i.value.includes(wallet))
+                            .map((item, index) => {
+                                return (
+                                    <Col key={index}>
+                                        <Card className="container" >
+                                            <Card.Body>
+                                                <Card.Title>
+                                                    {item.key}
+                                                </Card.Title>
+                                                <pre>{JSON.stringify(item.value).replace(/[{}"]/g, "")}</pre>
+                                            </Card.Body>
+                                        </Card>
+                                    </Col>
+                                );
+                            })}
+                    </Row>
+                </Container>
             </div>
 
         </div>

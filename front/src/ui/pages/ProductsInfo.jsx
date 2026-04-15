@@ -1,4 +1,4 @@
-import { Table, Card } from "react-bootstrap";
+import {Table, Card, Col, Row} from "react-bootstrap";
 import Header from "../component/Header.jsx";
 import { AtlantContext } from "../../core/context.jsx";
 import {useContext, useEffect, useState} from "react";
@@ -20,24 +20,25 @@ const ProductsInfo = () => {
             <Header />
 
             <div className="container">
-                <h2>Личный кабинет</h2>
-
-                <Card Bids>
-                    <Table>
-                        <tbody>
-                        {data
-                            .filter(i => i.key.includes("PRODS") && i.value.includes(sender))
-                            .map((item, index) => (
-                                <tr key={index}>
-                                    <td>
-                                        <pre>{JSON.stringify(JSON.parse(item.value), null, 2).replace(/[{}"]/g, "")}</pre>
-                                    </td>
-
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </Card>
+                <h2>все карточки продукта</h2>
+                <Row>
+                    {data
+                        .filter(i => i.key.includes("PRODS"))
+                        .map((item, index) => {
+                            return (
+                                <Col key={index}>
+                                    <Card className="container" >
+                                        <Card.Body>
+                                            <Card.Title>
+                                                {item.key}
+                                            </Card.Title>
+                                            <pre>{JSON.stringify(item.value).replace(/[{}"]/g, "")}</pre>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            );
+                        })}
+                </Row>
             </div>
 
         </div>

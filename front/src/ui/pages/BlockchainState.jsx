@@ -1,4 +1,4 @@
-import { Button, Table, Card } from "react-bootstrap";
+import {Button, Table, Card, Row, Col, Container} from "react-bootstrap";
 import Header from "../component/Header.jsx";
 import { AtlantContext } from "../../core/context.jsx";
 import {useContext, useEffect, useState} from "react";
@@ -24,24 +24,25 @@ const BlockchainState = () => {
             <Header />
             <div className="container">
                 <h2>вся информация из блокчейна</h2>
-                    <Card >
-                        <Card.Header></Card.Header>
-                        <Table>
-                            <tbody>
-                            {data
-                                .map((item, index) => (
-                                    <tr key={index}>
-                                        <td>
-                                            <pre>{JSON.stringify(JSON.parse(item.value), null, 2).replace(/[{}"]/g, "")}
-
-                                            </pre>
-                                        </td>
-
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                    </Card>
+                <Container >
+                    <Row>
+                        {data
+                            .map((item, index) => {
+                            return (
+                                <Col key={index}>
+                                    <Card className="container" >
+                                        <Card.Body>
+                                            <Card.Title>
+                                                {item.key}
+                                            </Card.Title>
+                                            <pre>{JSON.stringify(item.value).replace(/[{}"]/g, "")}</pre>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            );
+                        })}
+                    </Row>
+                </Container>
 
             </div>
 
