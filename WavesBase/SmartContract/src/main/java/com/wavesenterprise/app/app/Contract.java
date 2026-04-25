@@ -10,6 +10,8 @@ import com.wavesenterprise.sdk.contract.api.state.ContractState;
 import com.wavesenterprise.sdk.contract.api.state.TypeReference;
 import com.wavesenterprise.sdk.contract.api.state.mapping.Mapping;
 
+import java.util.Objects;
+
 /**
  * Смарт-контракт: цифровизация экспортно-ориентированных производств.
  *
@@ -55,7 +57,6 @@ public class Contract implements IContract {
     @ContractInit
     public void init() {
         String wallet = call.getCaller();
-        state.put("ADMIN", wallet);
         ORGS.put(wallet,  new Organization(wallet, "Operator", OrgType.OPERATOR, "ALL", ""));
         USERS.put(wallet, new User(wallet, wallet, Role.ADMIN, "Admin", "", "Administrator"));
     }
@@ -83,22 +84,22 @@ public class Contract implements IContract {
     public void registerOrg(String orgWallet, String name, String orgType, String region,
                             String description, String userWallet, String userRole,
                             String fullName, String contact, String position) {
-        String admin = state.get("ADMIN", new TypeReference<String>() {});
-        if (!call.getCaller().equals(admin)) throw new RuntimeException("ADMIN only");
+        User admin = USERS.get(call.getCaller());
+        if(Objects.equals(admin.role, Role.ADMIN)) {
+            if (!ORGS.has(orgWallet)) {
+                // первая регистрация — создаём смарт-аккаунт организации
+                ORGS.put(orgWallet, new Organization(orgWallet, name, orgType, region, description));
+            } else {
+                // организация уже есть — добавляем ключ нового сотрудника в список
+                Organization org = ORGS.get(orgWallet);
+                org.keys = org.keys + "," + userWallet;
+                ORGS.put(orgWallet, org);
+            }
 
-        if (!ORGS.has(orgWallet)) {
-            // первая регистрация — создаём смарт-аккаунт организации
-            ORGS.put(orgWallet, new Organization(orgWallet, name, orgType, region, description));
-        } else {
-            // организация уже есть — добавляем ключ нового сотрудника в список
-            Organization org = ORGS.get(orgWallet);
-            org.keys = org.keys + "," + userWallet;
-            ORGS.put(orgWallet, org);
+            // регистрируем публичный ключ сотрудника с его персональной ролью
+            if (!USERS.has(userWallet))
+                USERS.put(userWallet, new User(userWallet, orgWallet, userRole, fullName, contact, position));
         }
-
-        // регистрируем публичный ключ сотрудника с его персональной ролью
-        if (!USERS.has(userWallet))
-            USERS.put(userWallet, new User(userWallet, orgWallet, userRole, fullName, contact, position));
     }
 
     /**
@@ -110,18 +111,23 @@ public class Contract implements IContract {
     @ContractAction
     public void updateAccount(String orgWallet, String name, String region, String description,
                               String userWallet, String fullName, String contact, String position) {
-        String admin = state.get("ADMIN", new TypeReference<String>() {});
-        if (!call.getCaller().equals(admin)) throw new RuntimeException("ADMIN only");
 
-        if (!orgWallet.isEmpty()) {
-            Organization org = ORGS.get(orgWallet);
-            org.name = name; org.region = region; org.description = description;
-            ORGS.put(orgWallet, org);
-        }
-        if (!userWallet.isEmpty()) {
-            User user = USERS.get(userWallet);
-            user.fullName = fullName; user.contact = contact; user.position = position;
-            USERS.put(userWallet, user);
+        User admin = USERS.get(call.getCaller());
+        if(Objects.equals(admin.role, Role.ADMIN)) {
+            if (!orgWallet.isEmpty()) {
+                Organization org = ORGS.get(orgWallet);
+                org.name = name;
+                org.region = region;
+                org.description = description;
+                ORGS.put(orgWallet, org);
+            }
+            if (!userWallet.isEmpty()) {
+                User user = USERS.get(userWallet);
+                user.fullName = fullName;
+                user.contact = contact;
+                user.position = position;
+                USERS.put(userWallet, user);
+            }
         }
     }
 
@@ -132,18 +138,18 @@ public class Contract implements IContract {
      */
     @ContractAction
     public void setActive(String orgWallet, String userWallet, boolean isActive) {
-        String admin = state.get("ADMIN", new TypeReference<String>() {});
-        if (!call.getCaller().equals(admin)) throw new RuntimeException("ADMIN only");
-
-        if (!orgWallet.isEmpty()) {
-            Organization org = ORGS.get(orgWallet);
-            org.isActive = isActive;
-            ORGS.put(orgWallet, org);
-        }
-        if (!userWallet.isEmpty()) {
-            User user = USERS.get(userWallet);
-            user.isActive = isActive;
-            USERS.put(userWallet, user);
+        User admin = USERS.get(call.getCaller());
+        if(Objects.equals(admin.role, Role.ADMIN)) {
+            if (!orgWallet.isEmpty()) {
+                Organization org = ORGS.get(orgWallet);
+                org.isActive = isActive;
+                ORGS.put(orgWallet, org);
+            }
+            if (!userWallet.isEmpty()) {
+                User user = USERS.get(userWallet);
+                user.isActive = isActive;
+                USERS.put(userWallet, user);
+            }
         }
     }
 
@@ -154,7 +160,6 @@ public class Contract implements IContract {
     /**
      * Поставщик или оператор создают карточку продукта.
      * approved = false — публикация ждёт подтверждения оператора.
-     *
      * Критерии: поставщик вносит информацию о продукции; оператор вносит информацию о продукции.
      */
     @ContractAction
