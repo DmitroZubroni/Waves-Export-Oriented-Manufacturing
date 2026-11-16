@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { AtlantContext } from "../../../core/context.jsx";
 import { typograph } from "../../../core/typograph";
+import { Field, Input, Textarea } from "../../kit/Field.jsx";
 
 export const AddProduct = () => {
   const { post } = useContext(AtlantContext);
@@ -53,106 +54,72 @@ export const AddProduct = () => {
   };
 
   return (
-    <div className="mfg-card p-4 mb-4">
-      <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-15">
+    <div className="card card-lg mb-4">
+      <div className="flex justify-between items-center flex-wrap gap-3 mb-4 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
         <div>
-          <span className="mfg-badge-cyan mono-data mb-1">action: addProduct</span>
-          <h3 className="fs-5 fw-bold text-white mb-0">
-            {typograph("Регистрация экспортной партии готовой продукции (PRODS)")}
-          </h3>
+          <span className="badge badge-primary mono-data mb-2" style={{ display: "inline-flex" }}>action: addProduct</span>
+          <h3 className="text-lg fw-700">{typograph("Регистрация экспортной партии готовой продукции")}</h3>
         </div>
-        <button
-          type="button"
-          onClick={fillSample}
-          className="mfg-btn-secondary py-1 px-3"
-          style={{ minHeight: 34, fontSize: "0.75rem" }}
-        >
-          Заполнить образец ISO
+        <button type="button" onClick={fillSample} className="btn btn-secondary btn-sm">
+          {typograph("Заполнить образец ISO")}
         </button>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="row g-3">
-          <div className="col-12 col-md-8">
-            <label className="mfg-label mono-data">НАИМЕНОВАНИЕ ПРОДУКТА / ИЗДЕЛИЯ</label>
-            <input
-              type="text"
-              required
-              className="mfg-input"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-          </div>
+        <div className="form-grid">
+          <Field label="Наименование продукта / изделия" full>
+            {(fp) => (
+              <Input {...fp} type="text" required value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-4">
-            <label className="mfg-label mono-data">НОМЕР СЕРИЙНОЙ ПАРТИИ (BATCH ID)</label>
-            <input
-              type="text"
-              required
-              className="mfg-input mono-data"
-              value={form.serialBatch}
-              onChange={(e) => setForm({ ...form, serialBatch: e.target.value })}
-            />
-          </div>
+          <Field label="Номер серийной партии" hint="serialBatch" mono>
+            {(fp) => (
+              <Input {...fp} type="text" required className="mono-data" value={form.serialBatch}
+                onChange={(e) => setForm({ ...form, serialBatch: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">СТАНДАРТ КАЧЕСТВА И СЕРТИФИКАЦИЯ</label>
-            <input
-              type="text"
-              className="mfg-input"
-              value={form.standard}
-              onChange={(e) => setForm({ ...form, standard: e.target.value })}
-            />
-          </div>
+          <Field label="Стандарт качества и сертификация">
+            {(fp) => (
+              <Input {...fp} type="text" value={form.standard}
+                onChange={(e) => setForm({ ...form, standard: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">РЕГИОНЫ ЭКСПОРТА И ТРАНЗИТНЫЕ ПОРТЫ</label>
-            <input
-              type="text"
-              className="mfg-input"
-              value={form.regions}
-              onChange={(e) => setForm({ ...form, regions: e.target.value })}
-            />
-          </div>
+          <Field label="Регионы экспорта и транзитные порты">
+            {(fp) => (
+              <Input {...fp} type="text" value={form.regions}
+                onChange={(e) => setForm({ ...form, regions: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">МИНИМАЛЬНЫЙ ОБЪЕМ ПАРТИИ (ШТ.)</label>
-            <input
-              type="number"
-              className="mfg-input mono-data"
-              value={form.minVolume}
-              onChange={(e) => setForm({ ...form, minVolume: e.target.value })}
-            />
-          </div>
+          <Field label="Минимальный объём партии, шт.">
+            {(fp) => (
+              <Input {...fp} type="number" className="mono-data" value={form.minVolume}
+                onChange={(e) => setForm({ ...form, minVolume: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">МАКСИМАЛЬНЫЙ ОБЪЕМ ПАРТИИ (ШТ.)</label>
-            <input
-              type="number"
-              className="mfg-input mono-data"
-              value={form.maxVolume}
-              onChange={(e) => setForm({ ...form, maxVolume: e.target.value })}
-            />
-          </div>
+          <Field label="Максимальный объём партии, шт.">
+            {(fp) => (
+              <Input {...fp} type="number" className="mono-data" value={form.maxVolume}
+                onChange={(e) => setForm({ ...form, maxVolume: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12">
-            <label className="mfg-label mono-data">ТЕХНИЧЕСКИЕ ХАРАКТЕРИСТИКИ И СПЕЦИФИКАЦИЯ СПЛАВА</label>
-            <textarea
-              rows={2}
-              className="mfg-input"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-            />
-          </div>
+          <Field label="Технические характеристики и спецификация сплава" full>
+            {(fp) => (
+              <Textarea {...fp} rows={2} value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            )}
+          </Field>
         </div>
 
-        <div className="d-flex justify-content-end mt-4">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mfg-btn-primary"
-          >
-            <span>{submitting ? typograph("Подписание...") : typograph("Зарегистрировать партию продукции")}</span>
+        <div className="flex justify-end mt-6">
+          <button type="submit" disabled={submitting} className="btn btn-primary">
+            {submitting ? typograph("Подписание…") : typograph("Зарегистрировать партию продукции")}
           </button>
         </div>
       </form>

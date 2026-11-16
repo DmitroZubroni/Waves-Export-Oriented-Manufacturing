@@ -1,14 +1,32 @@
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { AtlantContext } from "../../core/context.jsx";
 import { NavLink, Link } from "react-router-dom";
 import { typograph } from "../../core/typograph";
 import { ToastContainer } from "./States.jsx";
+import { ThemeToggle } from "../kit/ThemeToggle.jsx";
+import { useDismiss } from "../kit/useDismiss.js";
+import {
+  ChevronDownIcon,
+  CheckIcon,
+  GlobeIcon,
+  RefreshIcon,
+  LogoutIcon,
+  FactoryMarkIcon,
+} from "../kit/icons.jsx";
+
+const NAV_ITEMS = [
+  { to: "/", label: "Кабинет", end: true },
+  { to: "/state", label: "Реестр блокчейна" },
+  { to: "/products", label: "Продукция" },
+  { to: "/bids", label: "Экспортные заявки" },
+  { to: "/userCard", label: "Контрагенты" },
+  { to: "/func", label: "Операции смарт-контракта" },
+];
 
 const Header = () => {
   const {
     sender,
     logout,
-    contractId,
     networkMode,
     setNetworkMode,
     blockHeight,
@@ -22,296 +40,190 @@ const Header = () => {
 
   const [counterpartyMenuOpen, setCounterpartyMenuOpen] = useState(false);
   const [networkMenuOpen, setNetworkMenuOpen] = useState(false);
+  const counterpartyRef = useRef(null);
+  const networkRef = useRef(null);
 
-  const shortSender = sender
-    ? `${sender.slice(0, 6)}...${sender.slice(-4)}`
-    : "";
+  useDismiss(counterpartyMenuOpen, () => setCounterpartyMenuOpen(false), counterpartyRef);
+  useDismiss(networkMenuOpen, () => setNetworkMenuOpen(false), networkRef);
+
+  const shortSender = sender ? `${sender.slice(0, 6)}…${sender.slice(-4)}` : "";
+
+  const networkLabel =
+    networkMode === "demo" ? "Демо ISO 9001" : networkMode === "testnet" ? "Waves Testnet" : "Свой узел";
 
   const handleSwitchCounterparty = (newOrg) => {
     setSender(newOrg.orgWallet);
     setCounterpartyMenuOpen(false);
     addToast({
       tone: "info",
-      title: "Активный контрагент изменен",
+      title: "Активный контрагент изменён",
       message: `Переключено на «${newOrg.name}» (${newOrg.userRole}).`,
     });
   };
 
   return (
     <>
-      <header className="mfg-header">
-        <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 max-w-7xl mx-auto">
-          {/* Brand */}
-          <Link
-            to="/"
-            className="d-flex align-items-center gap-2.5 text-decoration-none text-white"
-          >
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 12,
-                background: "linear-gradient(135deg, #0284C7 0%, #0369A1 100%)",
-                display: "grid",
-                placeItems: "center",
-                boxShadow: "0 0 18px rgba(56, 189, 248, 0.45)",
-                border: "1px solid rgba(255, 255, 255, 0.25)",
-              }}
-            >
-              <span style={{ fontSize: 20 }}>🏭</span>
-            </div>
-            <div>
-              <div
-                className="fw-bold tracking-tight text-white leading-tight d-flex align-items-center gap-2"
-                style={{ fontSize: "1.05rem" }}
-              >
+      <a href="#main-content" className="skip-link">
+        Перейти к содержимому
+      </a>
+      <header className="app-header">
+        <div className="app-header-inner">
+          <Link to="/" className="brand">
+            <span className="brand-mark" aria-hidden="true">
+              <FactoryMarkIcon size={22} />
+            </span>
+            <span>
+              <span className="brand-title">
                 <span>Waves Export Manufacturing</span>
-                <span className="mfg-badge-amber" style={{ fontSize: "0.65rem", padding: "0.15rem 0.5rem" }}>
-                  ISO 9001
-                </span>
-              </div>
-              <div
-                className="text-secondary mono-data"
-                style={{ fontSize: "0.7rem", letterSpacing: "0.06em" }}
-              >
-                BLOCKCHAIN SUPPLY CHAIN & EXPORT PROTOCOL
-              </div>
-            </div>
+                <span className="badge badge-accent">ISO 9001</span>
+              </span>
+              <span className="brand-sub mono-data">Цепь поставок на блокчейне</span>
+            </span>
           </Link>
 
-          {/* Navigation Links (WCAG 2.2 AA compliant, >= 44px touch target) */}
-          <nav
-            aria-label="Разделы производства"
-            className="d-flex align-items-center gap-1.5 flex-wrap"
-          >
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                `mfg-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              {typograph("Кабинет")}
-            </NavLink>
-            <NavLink
-              to="/state"
-              className={({ isActive }) =>
-                `mfg-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              {typograph("Реестр блокчейна")}
-            </NavLink>
-            <NavLink
-              to="/products"
-              className={({ isActive }) =>
-                `mfg-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              {typograph("Продукция")}
-            </NavLink>
-            <NavLink
-              to="/bids"
-              className={({ isActive }) =>
-                `mfg-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              {typograph("Экспортные заявки")}
-            </NavLink>
-            <NavLink
-              to="/userCard"
-              className={({ isActive }) =>
-                `mfg-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              {typograph("Контрагенты")}
-            </NavLink>
-            <NavLink
-              to="/func"
-              className={({ isActive }) =>
-                `mfg-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              {typograph("Операции смарт-контракта")}
-            </NavLink>
+          <nav aria-label="Разделы производства" className="main-nav">
+            {NAV_ITEMS.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+              >
+                {typograph(item.label)}
+              </NavLink>
+            ))}
           </nav>
 
-          {/* Right Controls: Network Selector & Counterparty Passport */}
-          <div className="d-flex align-items-center gap-2.5 flex-wrap">
-            {/* Network Mode Switcher */}
-            <div className="position-relative">
+          <div className="header-controls">
+            <ThemeToggle />
+
+            {/* Network mode switcher */}
+            <div className="relative" ref={networkRef}>
               <button
                 type="button"
-                onClick={() => setNetworkMenuOpen(!networkMenuOpen)}
-                className="mfg-btn-secondary py-1 px-2.5 d-flex align-items-center gap-2"
-                style={{ minHeight: 38, fontSize: "0.8125rem" }}
+                onClick={() => setNetworkMenuOpen((o) => !o)}
+                className="btn btn-plate btn-sm"
+                aria-haspopup="menu"
                 aria-expanded={networkMenuOpen}
                 aria-label="Выбор узла сети блокчейна"
               >
-                <span
-                  className={`mfg-diode ${
-                    networkMode === "demo"
-                      ? "mfg-diode-emerald"
-                      : networkMode === "testnet"
-                      ? "mfg-diode-cyan"
-                      : "mfg-diode-amber"
-                  }`}
-                />
-                <span className="mono-data">
-                  {networkMode === "demo"
-                    ? "Демо ISO 9001"
-                    : networkMode === "testnet"
-                    ? "Waves Testnet"
-                    : "Custom Node"}
-                </span>
-                <span style={{ fontSize: "0.7rem", color: "#94A3B8" }}>▼</span>
+                <GlobeIcon size={16} />
+                <span className="mono-data hide-mobile">{networkLabel}</span>
+                <ChevronDownIcon size={14} />
               </button>
 
               {networkMenuOpen && (
-                <div
-                  className="mfg-card p-2 position-absolute end-0 mt-2 shadow-lg z-3"
-                  style={{ width: 230, background: "#0F172A", border: "1px solid rgba(56, 189, 248, 0.3)" }}
-                >
-                  <div className="px-2 py-1 text-secondary mono-data" style={{ fontSize: "0.7rem" }}>
-                    РЕЖИМ ПОДКЛЮЧЕНИЯ:
-                  </div>
+                <div className="menu-panel" role="menu" aria-label="Режим подключения">
+                  <div className="menu-eyebrow mono-data">РЕЖИМ ПОДКЛЮЧЕНИЯ</div>
                   <button
                     type="button"
+                    role="menuitemradio"
+                    aria-checked={networkMode === "demo"}
                     onClick={() => {
                       setNetworkMode("demo");
                       setNetworkMenuOpen(false);
                     }}
-                    className={`w-100 text-start p-2 rounded border-0 bg-transparent text-white d-flex align-items-center justify-content-between ${
-                      networkMode === "demo" ? "bg-cyan-500/10 text-cyan-400 font-bold" : ""
-                    }`}
-                    style={{ fontSize: "0.8125rem" }}
+                    className={`menu-item ${networkMode === "demo" ? "is-active" : ""}`}
                   >
-                    <span>🏭 Реестр ISO 9001 (Mock)</span>
-                    {networkMode === "demo" && <span>✓</span>}
+                    <span>Реестр ISO 9001 (демо)</span>
+                    {networkMode === "demo" && <CheckIcon size={16} />}
                   </button>
                   <button
                     type="button"
+                    role="menuitemradio"
+                    aria-checked={networkMode === "testnet"}
                     onClick={() => {
                       setNetworkMode("testnet");
                       setNetworkMenuOpen(false);
                     }}
-                    className={`w-100 text-start p-2 rounded border-0 bg-transparent text-white d-flex align-items-center justify-content-between ${
-                      networkMode === "testnet" ? "bg-cyan-500/10 text-cyan-400 font-bold" : ""
-                    }`}
-                    style={{ fontSize: "0.8125rem" }}
+                    className={`menu-item ${networkMode === "testnet" ? "is-active" : ""}`}
                   >
-                    <span>🌐 Waves Public Testnet</span>
-                    {networkMode === "testnet" && <span>✓</span>}
+                    <span>Waves Public Testnet</span>
+                    {networkMode === "testnet" && <CheckIcon size={16} />}
                   </button>
-                  <div className="border-top border-secondary border-opacity-20 my-1" />
+                  <div className="menu-divider" role="separator" />
                   <button
                     type="button"
+                    role="menuitem"
                     onClick={() => {
                       resetDemoData();
                       setNetworkMenuOpen(false);
                     }}
-                    className="w-100 text-start p-2 rounded border-0 bg-transparent text-secondary hover-text-white"
-                    style={{ fontSize: "0.75rem" }}
+                    className="menu-item"
                   >
-                    ↻ Сбросить демо-данные
+                    <RefreshIcon size={16} />
+                    <span>Сбросить демо-данные</span>
                   </button>
                 </div>
               )}
             </div>
 
-            {/* Block Height Telemetry */}
-            <div
-              className="d-none d-lg-flex align-items-center gap-1.5 px-2.5 py-1 rounded-2 mono-data"
-              style={{
-                background: "rgba(15, 23, 42, 0.8)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                fontSize: "0.75rem",
-                color: "#94A3B8",
-              }}
-            >
-              <span>БЛОК:</span>
-              <span className="text-white fw-bold">#{blockHeight.toLocaleString("ru-RU")}</span>
+            {/* Block height telemetry */}
+            <div className="badge badge-plate hide-mobile mono-data">
+              <span>Блок</span>
+              <strong>#{blockHeight.toLocaleString("ru-RU")}</strong>
             </div>
 
-            {/* Sender / Counterparty Switcher */}
-            {sender ? (
-              <div className="position-relative">
+            {/* Sender / counterparty switcher */}
+            {sender && (
+              <div className="relative" ref={counterpartyRef}>
                 <button
                   type="button"
-                  onClick={() => setCounterpartyMenuOpen(!counterpartyMenuOpen)}
-                  className="mfg-btn-secondary py-1 px-3 d-flex align-items-center gap-2"
-                  style={{
-                    minHeight: 38,
-                    background: "rgba(30, 41, 59, 0.8)",
-                    border: "1px solid rgba(56, 189, 248, 0.35)",
-                  }}
+                  onClick={() => setCounterpartyMenuOpen((o) => !o)}
+                  className="btn btn-plate btn-sm"
+                  aria-haspopup="menu"
                   aria-expanded={counterpartyMenuOpen}
                   aria-label="Меню контрагента"
                 >
-                  <span className="mfg-diode mfg-diode-cyan" />
-                  <span className="mono-data fw-bold text-white" style={{ fontSize: "0.8125rem" }}>
-                    {shortSender}
-                  </span>
-                  <span style={{ fontSize: "0.7rem", color: "#94A3B8" }}>▼</span>
+                  <span className="diode diode-primary diode-live" />
+                  <span className="mono-data">{shortSender}</span>
+                  <ChevronDownIcon size={14} />
                 </button>
 
                 {counterpartyMenuOpen && (
-                  <div
-                    className="mfg-card p-3 position-absolute end-0 mt-2 shadow-lg z-3"
-                    style={{
-                      width: 320,
-                      background: "#0F172A",
-                      border: "1px solid rgba(56, 189, 248, 0.3)",
-                    }}
-                  >
-                    <div className="text-secondary mono-data mb-2" style={{ fontSize: "0.7rem" }}>
-                      СМЕНИТЬ РОЛЬ КОНТРАГЕНТА:
-                    </div>
-                    <div className="d-flex flex-column gap-1 mb-3">
-                      {organizations.map((org) => (
-                        <button
-                          key={org.orgWallet}
-                          type="button"
-                          onClick={() => handleSwitchCounterparty(org)}
-                          className={`text-start p-2 rounded border-0 bg-transparent text-white d-flex flex-column gap-0.5 ${
-                            sender === org.orgWallet ? "bg-cyan-500/10 border-cyan-500/30" : ""
-                          }`}
-                          style={{ fontSize: "0.8125rem" }}
-                        >
-                          <div className="d-flex justify-content-between align-items-center">
-                            <span className="fw-bold">{org.name}</span>
-                            <span className="mfg-badge-cyan" style={{ fontSize: "0.65rem" }}>
-                              {org.userRole}
-                            </span>
-                          </div>
-                          <span className="text-secondary mono-data" style={{ fontSize: "0.7rem" }}>
-                            {org.orgWallet.slice(0, 10)}...{org.orgWallet.slice(-6)}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="border-top border-secondary border-opacity-20 pt-2 d-flex justify-content-between align-items-center">
+                  <div className="menu-panel" role="menu" aria-label="Контрагент">
+                    <div className="menu-eyebrow mono-data">СМЕНИТЬ РОЛЬ КОНТРАГЕНТА</div>
+                    {organizations.map((org) => (
                       <button
+                        key={org.orgWallet}
                         type="button"
-                        onClick={() => {
-                          logout();
-                          setCounterpartyMenuOpen(false);
-                        }}
-                        className="mfg-btn-ghost text-danger p-0"
-                        style={{ minHeight: 32, fontSize: "0.8125rem" }}
+                        role="menuitemradio"
+                        aria-checked={sender === org.orgWallet}
+                        onClick={() => handleSwitchCounterparty(org)}
+                        className={`menu-item ${sender === org.orgWallet ? "is-active" : ""}`}
+                        style={{ flexDirection: "column", alignItems: "flex-start", gap: "2px" }}
                       >
-                        ✕ Выйти из кабинета
+                        <span className="flex items-center justify-between w-full gap-2">
+                          <span className="fw-700">{org.name}</span>
+                          <span className="badge badge-primary">{org.userRole}</span>
+                        </span>
+                        <span className="mono-data text-xs" style={{ color: "var(--inverse-muted)" }}>
+                          {org.orgWallet.slice(0, 10)}…{org.orgWallet.slice(-6)}
+                        </span>
                       </button>
-                    </div>
+                    ))}
+                    <div className="menu-divider" role="separator" />
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        logout();
+                        setCounterpartyMenuOpen(false);
+                      }}
+                      className="menu-item"
+                      style={{ color: "#fca5a5" }}
+                    >
+                      <LogoutIcon size={16} />
+                      <span>Выйти из кабинета</span>
+                    </button>
                   </div>
                 )}
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </header>
 
-      {/* Global Toast Notifications */}
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   );

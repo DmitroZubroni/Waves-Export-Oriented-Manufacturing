@@ -1,9 +1,16 @@
 import { useContext, useState } from "react";
 import { AtlantContext } from "../../../core/context.jsx";
 import { typograph } from "../../../core/typograph";
+import { Field, Input, Textarea } from "../../kit/Field.jsx";
+import { Select } from "../../kit/Select.jsx";
 
 export const ApproveProduct = () => {
   const { post, products } = useContext(AtlantContext);
+
+  const productOptions = products.map((p) => ({
+    value: p.id,
+    label: `${p.id} — ${p.name} (${p.approved ? "одобрено" : "ожидает"})`,
+  }));
 
   const [productId, setProductId] = useState(
     products.find((p) => !p.approved)?.id || "PRODS_OPTICAL_PRESSURE_SENSOR_03"
@@ -30,62 +37,36 @@ export const ApproveProduct = () => {
   };
 
   return (
-    <div className="mfg-card p-4">
-      <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-15">
-        <div>
-          <span className="mfg-badge-amber mono-data mb-1">action: approveProduct</span>
-          <h3 className="fs-5 fw-bold text-white mb-0">
-            {typograph("Лабораторное подтверждение качества ISO 9001 (ApproveProduct)")}
-          </h3>
-        </div>
+    <div className="card card-lg">
+      <div className="mb-4 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+        <span className="badge badge-accent mono-data mb-2" style={{ display: "inline-flex" }}>action: approveProduct</span>
+        <h3 className="text-lg fw-700">{typograph("Лабораторное подтверждение качества ISO 9001")}</h3>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="row g-3">
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">ВЫБОР ПАРТИИ ПРОДУКЦИИ (PRODUCT ID)</label>
-            <select
-              className="mfg-input mono-data"
-              value={productId}
-              onChange={(e) => setProductId(e.target.value)}
-            >
-              {products.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.id} — {p.name} ({p.approved ? "ОДОБРЕНО" : "ОЖИДАЕТ"})
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="form-grid">
+          <Field label="Выбор партии продукции" hint="productId">
+            {(fp) => <Select {...fp} value={productId} options={productOptions} onChange={setProductId} />}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">АККРЕДИТОВАННЫЕ ДИСТРИБЬЮТОРЫ / ПЕРЕВОЗЧИКИ</label>
-            <input
-              type="text"
-              className="mfg-input mono-data"
-              value={distributors}
-              onChange={(e) => setDistributors(e.target.value)}
-            />
-          </div>
+          <Field label="Аккредитованные дистрибьюторы / перевозчики" mono>
+            {(fp) => (
+              <Input {...fp} type="text" className="mono-data" value={distributors}
+                onChange={(e) => setDistributors(e.target.value)} />
+            )}
+          </Field>
 
-          <div className="col-12">
-            <label className="mfg-label mono-data">ЗАКЛЮЧЕНИЕ ЭКСПЕРТИЗЫ И НОМЕР ПАСПОРТА ISO 9001</label>
-            <textarea
-              rows={2}
-              className="mfg-input"
-              value={certInfo}
-              onChange={(e) => setCertInfo(e.target.value)}
-            />
-          </div>
+          <Field label="Заключение экспертизы и номер паспорта ISO 9001" full>
+            {(fp) => (
+              <Textarea {...fp} rows={2} value={certInfo}
+                onChange={(e) => setCertInfo(e.target.value)} />
+            )}
+          </Field>
         </div>
 
-        <div className="d-flex justify-content-end mt-4">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mfg-btn-primary"
-            style={{ background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)", borderColor: "#FBBF24" }}
-          >
-            <span>{submitting ? typograph("Подписание сертификата...") : typograph("Утвердить паспорт качества ISO 9001")}</span>
+        <div className="flex justify-end mt-6">
+          <button type="submit" disabled={submitting} className="btn btn-primary">
+            {submitting ? typograph("Подписание сертификата…") : typograph("Утвердить паспорт качества ISO 9001")}
           </button>
         </div>
       </form>

@@ -1,9 +1,12 @@
 import { useContext, useState } from "react";
 import { AtlantContext } from "../../../core/context.jsx";
 import { typograph } from "../../../core/typograph";
+import { Field, Input, Textarea } from "../../kit/Field.jsx";
+import { Select } from "../../kit/Select.jsx";
 
 export const RespondToBid = () => {
   const { post, bids } = useContext(AtlantContext);
+  const bidOptions = bids.map((b) => ({ value: b.id, label: `${b.id} — ${b.title}` }));
 
   const [form, setForm] = useState({
     bidId: bids[0]?.id || "BIDS_EXP_2026_001",
@@ -37,81 +40,50 @@ export const RespondToBid = () => {
   };
 
   return (
-    <div className="mfg-card p-4 mb-4">
-      <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-15">
-        <div>
-          <span className="mfg-badge-cyan mono-data mb-1">action: respondToBid</span>
-          <h3 className="fs-5 fw-bold text-white mb-0">
-            {typograph("Ответ поставщика на заявку (RespondToBid)")}
-          </h3>
-        </div>
+    <div className="card card-lg mb-4">
+      <div className="mb-4 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+        <span className="badge badge-primary mono-data mb-2" style={{ display: "inline-flex" }}>action: respondToBid</span>
+        <h3 className="text-lg fw-700">{typograph("Ответ поставщика на заявку")}</h3>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="row g-3">
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">ИДЕНТИФИКАТОР ЗАЯВКИ (BID ID)</label>
-            <select
-              className="mfg-input mono-data"
-              value={form.bidId}
-              onChange={(e) => setForm({ ...form, bidId: e.target.value })}
-            >
-              {bids.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.id} — {b.title}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="form-grid">
+          <Field label="Идентификатор заявки" hint="bidId">
+            {(fp) => <Select {...fp} value={form.bidId} options={bidOptions} onChange={(v) => setForm({ ...form, bidId: v })} />}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">ИТОГОВАЯ СТОИМОСТЬ С ДОСТАВКОЙ (TOTALCOST)</label>
-            <input
-              type="text"
-              className="mfg-input mono-data"
-              value={form.totalCost}
-              onChange={(e) => setForm({ ...form, totalCost: e.target.value })}
-            />
-          </div>
+          <Field label="Итоговая стоимость с доставкой" mono>
+            {(fp) => (
+              <Input {...fp} type="text" className="mono-data" value={form.totalCost}
+                onChange={(e) => setForm({ ...form, totalCost: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">ПОДТВЕРЖДЕННАЯ ДАТА ОТГРУЗКИ</label>
-            <input
-              type="date"
-              className="mfg-input mono-data"
-              value={form.deliveryDate}
-              onChange={(e) => setForm({ ...form, deliveryDate: e.target.value })}
-            />
-          </div>
+          <Field label="Подтверждённая дата отгрузки">
+            {(fp) => (
+              <Input {...fp} type="date" className="mono-data" value={form.deliveryDate}
+                onChange={(e) => setForm({ ...form, deliveryDate: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">УСЛОВИЯ ИНКОТЕРМС</label>
-            <input
-              type="text"
-              className="mfg-input mono-data"
-              value={form.deliveryCond}
-              onChange={(e) => setForm({ ...form, deliveryCond: e.target.value })}
-            />
-          </div>
+          <Field label="Условия Инкотермс" mono>
+            {(fp) => (
+              <Input {...fp} type="text" className="mono-data" value={form.deliveryCond}
+                onChange={(e) => setForm({ ...form, deliveryCond: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12">
-            <label className="mfg-label mono-data">КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ И УСЛОВИЯ КАЧЕСТВА</label>
-            <textarea
-              rows={2}
-              className="mfg-input"
-              value={form.propose}
-              onChange={(e) => setForm({ ...form, propose: e.target.value })}
-            />
-          </div>
+          <Field label="Коммерческое предложение и условия качества" full>
+            {(fp) => (
+              <Textarea {...fp} rows={2} value={form.propose}
+                onChange={(e) => setForm({ ...form, propose: e.target.value })} />
+            )}
+          </Field>
         </div>
 
-        <div className="d-flex justify-content-end mt-4">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mfg-btn-primary"
-          >
-            <span>{submitting ? typograph("Подписание...") : typograph("Направить ответ заказчику")}</span>
+        <div className="flex justify-end mt-6">
+          <button type="submit" disabled={submitting} className="btn btn-primary">
+            {submitting ? typograph("Подписание…") : typograph("Направить ответ заказчику")}
           </button>
         </div>
       </form>

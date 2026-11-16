@@ -1,9 +1,21 @@
 import { useContext, useState } from "react";
 import { AtlantContext } from "../../../core/context.jsx";
 import { typograph } from "../../../core/typograph";
+import { Field, Input } from "../../kit/Field.jsx";
+import { Select } from "../../kit/Select.jsx";
+
+const STAGE_OPTIONS = [
+  { value: "PRODUCTION_COMPLETE", label: "Production complete — партия готова на заводе" },
+  { value: "QA_LAB_VERIFIED", label: "QA lab verified — аудит ISO 9001 пройден" },
+  { value: "CUSTOMS_CLEARED", label: "Customs cleared — экспортная таможня очищена" },
+  { value: "SEA_FREIGHT", label: "Sea freight — погрузка на борт судна / морем" },
+  { value: "PORT_DISCHARGED", label: "Port discharged — выгрузка в порту назначения" },
+  { value: "DELIVERED", label: "Delivered — доставлено на терминал покупателя" },
+];
 
 export const UpdateStage = () => {
   const { post, bids } = useContext(AtlantContext);
+  const bidOptions = bids.map((b) => ({ value: b.id, label: `${b.id} — ${b.title}` }));
 
   const [bidId, setBidId] = useState(bids[0]?.id || "BIDS_EXP_2026_001");
   const [stageStatus, setStageStatus] = useState("SEA_FREIGHT");
@@ -27,67 +39,33 @@ export const UpdateStage = () => {
   };
 
   return (
-    <div className="mfg-card p-4 mb-4">
-      <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-15">
-        <div>
-          <span className="mfg-badge-cyan mono-data mb-1">action: updateStage</span>
-          <h3 className="fs-5 fw-bold text-white mb-0">
-            {typograph("Фиксация логистического этапа и транзита (UpdateStage)")}
-          </h3>
-        </div>
+    <div className="card card-lg mb-4">
+      <div className="mb-4 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+        <span className="badge badge-primary mono-data mb-2" style={{ display: "inline-flex" }}>action: updateStage</span>
+        <h3 className="text-lg fw-700">{typograph("Фиксация логистического этапа и транзита")}</h3>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="row g-3">
-          <div className="col-12 col-md-4">
-            <label className="mfg-label mono-data">ИДЕНТИФИКАТОР ЗАЯВКИ (BID ID)</label>
-            <select
-              className="mfg-input mono-data"
-              value={bidId}
-              onChange={(e) => setBidId(e.target.value)}
-            >
-              {bids.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.id} — {b.title}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="form-grid">
+          <Field label="Идентификатор заявки" hint="bidId">
+            {(fp) => <Select {...fp} value={bidId} options={bidOptions} onChange={setBidId} />}
+          </Field>
 
-          <div className="col-12 col-md-4">
-            <label className="mfg-label mono-data">ЭТАП ЛОГИСТИКИ (STAGESTATUS)</label>
-            <select
-              className="mfg-input mono-data"
-              value={stageStatus}
-              onChange={(e) => setStageStatus(e.target.value)}
-            >
-              <option value="PRODUCTION_COMPLETE">PRODUCTION_COMPLETE (Партия готова на заводе)</option>
-              <option value="QA_LAB_VERIFIED">QA_LAB_VERIFIED (Аудит ISO 9001 пройден)</option>
-              <option value="CUSTOMS_CLEARED">CUSTOMS_CLEARED (Экспортная таможня очищена)</option>
-              <option value="SEA_FREIGHT">SEA_FREIGHT (Погрузка на борт судна / морем)</option>
-              <option value="PORT_DISCHARGED">PORT_DISCHARGED (Выгрузка в порту назначения)</option>
-              <option value="DELIVERED">DELIVERED (Доставлено на терминал покупателя)</option>
-            </select>
-          </div>
+          <Field label="Этап логистики" hint="stageStatus">
+            {(fp) => <Select {...fp} value={stageStatus} options={STAGE_OPTIONS} onChange={setStageStatus} />}
+          </Field>
 
-          <div className="col-12 col-md-4">
-            <label className="mfg-label mono-data">ХЭШ КОНОСАМЕНТА / ПЛОМБЫ</label>
-            <input
-              type="text"
-              className="mfg-input mono-data"
-              value={stageHash}
-              onChange={(e) => setStageHash(e.target.value)}
-            />
-          </div>
+          <Field label="Хэш коносамента / пломбы" mono>
+            {(fp) => (
+              <Input {...fp} type="text" className="mono-data" value={stageHash}
+                onChange={(e) => setStageHash(e.target.value)} />
+            )}
+          </Field>
         </div>
 
-        <div className="d-flex justify-content-end mt-4">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mfg-btn-primary"
-          >
-            <span>{submitting ? typograph("Подписание...") : typograph("Зафиксировать этап доставки в блокчейне")}</span>
+        <div className="flex justify-end mt-6">
+          <button type="submit" disabled={submitting} className="btn btn-primary">
+            {submitting ? typograph("Подписание…") : typograph("Зафиксировать этап доставки")}
           </button>
         </div>
       </form>

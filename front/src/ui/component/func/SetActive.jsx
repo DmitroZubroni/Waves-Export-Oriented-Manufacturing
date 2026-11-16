@@ -1,6 +1,13 @@
 import { useContext, useState } from "react";
 import { AtlantContext } from "../../../core/context.jsx";
 import { typograph } from "../../../core/typograph";
+import { Field, Input } from "../../kit/Field.jsx";
+import { Select } from "../../kit/Select.jsx";
+
+const STATUS_OPTIONS = [
+  { value: "true", label: "Активен (Active)" },
+  { value: "false", label: "Заблокирован (Revoked)" },
+];
 
 export const SetActive = () => {
   const { post, sender } = useContext(AtlantContext);
@@ -26,60 +33,36 @@ export const SetActive = () => {
   };
 
   return (
-    <div className="mfg-card p-4">
-      <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-15">
-        <div>
-          <span className="mfg-badge-cyan mono-data mb-1">action: setActive</span>
-          <h3 className="fs-5 fw-bold text-white mb-0">
-            {typograph("Управление активным статусом участника (SetActive)")}
-          </h3>
-        </div>
+    <div className="card card-lg">
+      <div className="mb-4 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+        <span className="badge badge-primary mono-data mb-2" style={{ display: "inline-flex" }}>action: setActive</span>
+        <h3 className="text-lg fw-700">{typograph("Управление активным статусом участника")}</h3>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="row g-3">
-          <div className="col-12 col-md-5">
-            <label className="mfg-label mono-data">КОШЕЛЕК ОРГАНИЗАЦИИ</label>
-            <input
-              type="text"
-              required
-              className="mfg-input mono-data"
-              value={orgWallet}
-              onChange={(e) => setOrgWallet(e.target.value)}
-            />
-          </div>
+        <div className="form-grid">
+          <Field label="Кошелёк организации" mono>
+            {(fp) => (
+              <Input {...fp} type="text" required className="mono-data" value={orgWallet}
+                onChange={(e) => setOrgWallet(e.target.value)} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-4">
-            <label className="mfg-label mono-data">КОШЕЛЕК СОТРУДНИКА</label>
-            <input
-              type="text"
-              required
-              className="mfg-input mono-data"
-              value={userWallet}
-              onChange={(e) => setUserWallet(e.target.value)}
-            />
-          </div>
+          <Field label="Кошелёк сотрудника" mono>
+            {(fp) => (
+              <Input {...fp} type="text" required className="mono-data" value={userWallet}
+                onChange={(e) => setUserWallet(e.target.value)} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-3">
-            <label className="mfg-label mono-data">СТАТУС ДОСТУПА</label>
-            <select
-              className="mfg-input mono-data"
-              value={isActive}
-              onChange={(e) => setIsActive(e.target.value)}
-            >
-              <option value="true">АКТИВЕН (Active)</option>
-              <option value="false">ЗАБЛОКИРОВАН (Revoked)</option>
-            </select>
-          </div>
+          <Field label="Статус доступа">
+            {(fp) => <Select {...fp} value={isActive} options={STATUS_OPTIONS} onChange={setIsActive} />}
+          </Field>
         </div>
 
-        <div className="d-flex justify-content-end mt-4">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mfg-btn-primary"
-          >
-            <span>{submitting ? typograph("Подписание...") : typograph("Изменить статус доступа")}</span>
+        <div className="flex justify-end mt-6">
+          <button type="submit" disabled={submitting} className="btn btn-primary">
+            {submitting ? typograph("Подписание…") : typograph("Изменить статус доступа")}
           </button>
         </div>
       </form>

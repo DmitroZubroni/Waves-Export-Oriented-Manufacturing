@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { AtlantContext } from "../../../core/context.jsx";
 import { typograph } from "../../../core/typograph";
+import { Field, Input, Textarea } from "../../kit/Field.jsx";
 
 export const UpdateAccount = () => {
   const { post, sender } = useContext(AtlantContext);
@@ -39,77 +40,53 @@ export const UpdateAccount = () => {
   };
 
   return (
-    <div className="mfg-card p-4 mb-4">
-      <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-15">
-        <div>
-          <span className="mfg-badge-cyan mono-data mb-1">action: updateAccount</span>
-          <h3 className="fs-5 fw-bold text-white mb-0">
-            {typograph("Обновление реквизитов учетной записи")}
-          </h3>
-        </div>
+    <div className="card card-lg mb-4">
+      <div className="mb-4 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+        <span className="badge badge-primary mono-data mb-2" style={{ display: "inline-flex" }}>action: updateAccount</span>
+        <h3 className="text-lg fw-700">{typograph("Обновление реквизитов учётной записи")}</h3>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="row g-3">
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">АДРЕС ОРГАНИЗАЦИИ (ORGWALLET)</label>
-            <input
-              type="text"
-              required
-              className="mfg-input mono-data"
-              value={form.orgWallet}
-              onChange={(e) => setForm({ ...form, orgWallet: e.target.value })}
-            />
-          </div>
+        <div className="form-grid">
+          <Field label="Адрес организации" hint="orgWallet" mono>
+            {(fp) => (
+              <Input {...fp} type="text" required className="mono-data" value={form.orgWallet}
+                onChange={(e) => setForm({ ...form, orgWallet: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">ОБНОВЛЕННОЕ НАИМЕНОВАНИЕ (NAME)</label>
-            <input
-              type="text"
-              className="mfg-input"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-          </div>
+          <Field label="Обновлённое наименование">
+            {(fp) => (
+              <Input {...fp} type="text" value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">РЕГИОН</label>
-            <input
-              type="text"
-              className="mfg-input"
-              value={form.region}
-              onChange={(e) => setForm({ ...form, region: e.target.value })}
-            />
-          </div>
+          <Field label="Регион">
+            {(fp) => (
+              <Input {...fp} type="text" value={form.region}
+                onChange={(e) => setForm({ ...form, region: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">КОНТАКТНЫЙ EMAIL / ТЕЛЕФОН</label>
-            <input
-              type="text"
-              className="mfg-input"
-              value={form.contact}
-              onChange={(e) => setForm({ ...form, contact: e.target.value })}
-            />
-          </div>
+          <Field label="Контактный email / телефон">
+            {(fp) => (
+              <Input {...fp} type="text" value={form.contact}
+                onChange={(e) => setForm({ ...form, contact: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12">
-            <label className="mfg-label mono-data">НОВОЕ ОПИСАНИЕ И СЕРТИФИКАТЫ</label>
-            <textarea
-              rows={2}
-              className="mfg-input"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-            />
-          </div>
+          <Field label="Новое описание и сертификаты" full>
+            {(fp) => (
+              <Textarea {...fp} rows={2} value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            )}
+          </Field>
         </div>
 
-        <div className="d-flex justify-content-end mt-4">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mfg-btn-primary"
-          >
-            <span>{submitting ? typograph("Подписание...") : typograph("Обновить реквизиты")}</span>
+        <div className="flex justify-end mt-6">
+          <button type="submit" disabled={submitting} className="btn btn-primary">
+            {submitting ? typograph("Подписание…") : typograph("Обновить реквизиты")}
           </button>
         </div>
       </form>

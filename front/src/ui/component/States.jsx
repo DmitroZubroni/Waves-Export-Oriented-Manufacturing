@@ -1,56 +1,41 @@
-import React, { useState } from 'react';
-import { typograph } from '../../core/typograph';
-import EmptyConveyorArt from './art/EmptyConveyorArt';
-import NetworkDisconnectArt from './art/NetworkDisconnectArt';
+import { useState } from "react";
+import { typograph } from "../../core/typograph";
+import EmptyConveyorArt from "./art/EmptyConveyorArt";
+import NetworkDisconnectArt from "./art/NetworkDisconnectArt";
+import { CheckIcon, CloseIcon, AlertIcon, InfoIcon, CopyIcon } from "../kit/icons.jsx";
 
 /**
- * EmptyState — Rule У1: Empty state explains what it is, why it's empty, and provides an action.
+ * States.jsx — 4 состояния экрана по Правилу У1: пустое, загрузка, ошибка, успех.
+ * Пустое и ошибка объясняют, что случилось, и дают следующее действие (Я4/Я5).
  */
 export function EmptyState({
-  title = 'Данные отсутствуют в реестре',
-  description = 'В текущем блоке смарт-контракта Waves нет записей по заданному фильтру или контрагенту.',
+  title = "Данные отсутствуют в реестре",
+  description = "В текущем блоке смарт-контракта Waves нет записей по заданному фильтру или контрагенту.",
   actionLabel,
   onAction,
   secondaryLabel,
   onSecondary,
   icon,
-  className = '',
+  className = "",
 }) {
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className={`mfg-card text-center p-8 p-md-5 border-dashed ${className}`}
-      style={{ borderColor: 'rgba(56, 189, 248, 0.25)', background: 'rgba(15, 23, 42, 0.6)' }}
-    >
-      <div className="d-flex justify-content-center mb-3">
-        {icon || <EmptyConveyorArt width={140} height={100} />}
-      </div>
-      <h3 className="fw-bold text-white mb-2" style={{ fontSize: '1.25rem' }}>
-        {typograph(title)}
-      </h3>
-      <p className="text-secondary mx-auto mb-4" style={{ maxWidth: '44ch', fontSize: '0.9375rem' }}>
+    <div role="status" className={`state-panel ${className}`}>
+      {icon || <EmptyConveyorArt width={140} height={100} />}
+      <h3 className="text-xl fw-700 mt-4 mb-2">{typograph(title)}</h3>
+      <p className="text-muted max-prose" style={{ maxWidth: "44ch" }}>
         {typograph(description)}
       </p>
 
       {(actionLabel || secondaryLabel) && (
-        <div className="d-flex flex-wrap items-center justify-content-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
           {actionLabel && onAction && (
-            <button
-              type="button"
-              onClick={onAction}
-              className="mfg-btn-primary"
-            >
-              <span>{typograph(actionLabel)}</span>
+            <button type="button" onClick={onAction} className="btn btn-primary">
+              {typograph(actionLabel)}
             </button>
           )}
           {secondaryLabel && onSecondary && (
-            <button
-              type="button"
-              onClick={onSecondary}
-              className="mfg-btn-secondary"
-            >
-              <span>{typograph(secondaryLabel)}</span>
+            <button type="button" onClick={onSecondary} className="btn btn-secondary">
+              {typograph(secondaryLabel)}
             </button>
           )}
         </div>
@@ -60,19 +45,19 @@ export function EmptyState({
 }
 
 /**
- * LoadingSkeleton — Rule У1 / У2: Pulsing skeleton matching real card layouts without jumping.
+ * LoadingSkeleton — скелетон повторяет форму будущего контента, без прыжков макета (У1/У2).
  */
-export function LoadingSkeleton({ count = 3, type = 'cards', className = '' }) {
-  if (type === 'table') {
+export function LoadingSkeleton({ count = 3, type = "cards", className = "" }) {
+  if (type === "table") {
     return (
-      <div role="status" aria-live="polite" aria-busy="true" className={`mfg-card p-3 ${className}`}>
-        <span className="visually-hidden">Загрузка данных из блокчейна...</span>
-        <div className="d-flex flex-column gap-3">
+      <div role="status" aria-live="polite" aria-busy="true" className={`card ${className}`}>
+        <span className="sr-only">Загрузка данных из блокчейна…</span>
+        <div className="flex flex-col gap-4">
           {Array.from({ length: count }).map((_, i) => (
-            <div key={i} className="d-flex align-items-center gap-3 py-2 border-bottom border-secondary border-opacity-10">
-              <div className="mfg-skeleton-pulse rounded" style={{ width: 120, height: 20 }} />
-              <div className="mfg-skeleton-pulse rounded flex-grow-1" style={{ height: 16 }} />
-              <div className="mfg-skeleton-pulse rounded" style={{ width: 80, height: 24 }} />
+            <div key={i} className="flex items-center gap-3" style={{ paddingBlock: 8 }}>
+              <span className="skeleton" style={{ width: 120, height: 20 }} />
+              <span className="skeleton flex-1" style={{ height: 16 }} />
+              <span className="skeleton" style={{ width: 80, height: 24 }} />
             </div>
           ))}
         </div>
@@ -81,31 +66,21 @@ export function LoadingSkeleton({ count = 3, type = 'cards', className = '' }) {
   }
 
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
-      className={`row g-3 ${className}`}
-    >
-      <span className="visually-hidden">Загрузка данных реестра...</span>
+    <div role="status" aria-live="polite" aria-busy="true" className={`grid-cards ${className}`}>
+      <span className="sr-only">Загрузка данных реестра…</span>
       {Array.from({ length: count }).map((_, idx) => (
-        <div key={idx} className="col-12 col-md-6 col-lg-4">
-          <div
-            className="mfg-card p-4 h-100 d-flex flex-column justify-content-between"
-            style={{ minHeight: 180 }}
-          >
-            <div>
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <div className="mfg-skeleton-pulse rounded-pill" style={{ width: 90, height: 22 }} />
-                <div className="mfg-skeleton-pulse rounded-circle" style={{ width: 16, height: 16 }} />
-              </div>
-              <div className="mfg-skeleton-pulse rounded mb-2" style={{ width: '85%', height: 22 }} />
-              <div className="mfg-skeleton-pulse rounded mb-2" style={{ width: '60%', height: 16 }} />
+        <div key={idx} className="card flex flex-col justify-between" style={{ minHeight: 180 }}>
+          <div>
+            <div className="flex justify-between items-center mb-3">
+              <span className="skeleton" style={{ width: 90, height: 22, borderRadius: 9999 }} />
+              <span className="skeleton" style={{ width: 16, height: 16, borderRadius: 9999 }} />
             </div>
-            <div className="mt-4 pt-3 border-top border-secondary border-opacity-15 d-flex justify-content-between align-items-center">
-              <div className="mfg-skeleton-pulse rounded" style={{ width: 70, height: 14 }} />
-              <div className="mfg-skeleton-pulse rounded" style={{ width: 90, height: 18 }} />
-            </div>
+            <span className="skeleton mb-2" style={{ width: "85%", height: 22 }} />
+            <span className="skeleton" style={{ width: "60%", height: 16 }} />
+          </div>
+          <div className="flex justify-between items-center mt-4 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
+            <span className="skeleton" style={{ width: 70, height: 14 }} />
+            <span className="skeleton" style={{ width: 90, height: 18 }} />
           </div>
         </div>
       ))}
@@ -114,50 +89,34 @@ export function LoadingSkeleton({ count = 3, type = 'cards', className = '' }) {
 }
 
 /**
- * ErrorState — Rule У1 / У4: Explains what happened in human language and has a Retry CTA.
+ * ErrorState — объясняет, что случилось, и даёт кнопку «Повторить» (У1/У4).
  */
 export function ErrorState({
-  title = 'Ошибка узла блокчейна Waves',
-  description = 'Не удалось подключиться к REST API контракта Waves. Проверьте сетевое соединение или переключитесь на Демо-Реестр.',
+  title = "Ошибка узла блокчейна Waves",
+  description = "Не удалось подключиться к REST API контракта Waves. Проверьте сетевое соединение или переключитесь на демо-реестр.",
   onRetry,
-  retryLabel = 'Повторить запрос',
+  retryLabel = "Повторить запрос",
   secondaryAction,
-  secondaryLabel = 'Перейти в Демо-Реестр ISO 9001',
-  className = '',
+  secondaryLabel = "Перейти в демо-реестр ISO 9001",
+  className = "",
 }) {
   return (
-    <div
-      role="alert"
-      className={`mfg-card text-center p-8 p-md-5 border-rose-500/40 bg-rose-500/5 ${className}`}
-    >
-      <div className="d-flex justify-content-center mb-3">
-        <NetworkDisconnectArt width={140} height={100} />
-      </div>
-      <h3 className="fw-bold text-white mb-2" style={{ fontSize: '1.25rem' }}>
-        {typograph(title)}
-      </h3>
-      <p className="text-secondary mx-auto mb-4" style={{ maxWidth: '44ch', fontSize: '0.9375rem' }}>
+    <div role="alert" className={`state-panel is-error ${className}`}>
+      <NetworkDisconnectArt width={140} height={100} />
+      <h3 className="text-xl fw-700 mt-4 mb-2">{typograph(title)}</h3>
+      <p className="text-muted" style={{ maxWidth: "44ch" }}>
         {typograph(description)}
       </p>
 
-      <div className="d-flex flex-wrap items-center justify-content-center gap-3">
+      <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
         {onRetry && (
-          <button
-            type="button"
-            onClick={onRetry}
-            className="mfg-btn-primary"
-            style={{ background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)', borderColor: '#FB7185' }}
-          >
-            <span>{typograph(retryLabel)}</span>
+          <button type="button" onClick={onRetry} className="btn btn-primary">
+            {typograph(retryLabel)}
           </button>
         )}
         {secondaryAction && (
-          <button
-            type="button"
-            onClick={secondaryAction}
-            className="mfg-btn-secondary"
-          >
-            <span>{typograph(secondaryLabel)}</span>
+          <button type="button" onClick={secondaryAction} className="btn btn-secondary">
+            {typograph(secondaryLabel)}
           </button>
         )}
       </div>
@@ -166,133 +125,97 @@ export function ErrorState({
 }
 
 /**
- * SuccessState — Rule У1: Rich confirmation with copyable TX ID and link.
+ * SuccessState — развёрнутое подтверждение с копируемым TX ID (У1).
  */
 export function SuccessState({
-  title = 'Операция успешно подтверждена',
+  title = "Операция успешно подтверждена",
   txId,
-  blockHeight,
-  message = 'Транзакция смарт-контракта включена в распределенный реестр Waves.',
+  message = "Транзакция смарт-контракта включена в распределённый реестр Waves.",
   onDismiss,
 }) {
   const [copied, setCopied] = useState(false);
 
   const copyTx = () => {
-    if (txId) {
-      navigator.clipboard?.writeText(txId);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    if (!txId) return;
+    navigator.clipboard?.writeText(txId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div
-      role="status"
-      className="mfg-card p-4 p-md-5 text-center border-emerald-500/40"
-      style={{ background: 'rgba(16, 185, 129, 0.05)' }}
-    >
-      <div
-        className="mx-auto mb-3 d-grid place-items-center rounded-circle"
-        style={{ width: 56, height: 56, background: 'rgba(16, 185, 129, 0.15)', color: '#34D399', fontSize: 28 }}
+    <div role="status" className="state-panel is-success">
+      <span
+        className="flex items-center justify-center"
+        style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--success-soft)", color: "var(--success)" }}
+        aria-hidden="true"
       >
-        ✓
-      </div>
-      <h3 className="fw-bold text-white mb-2" style={{ fontSize: '1.25rem' }}>
-        {typograph(title)}
-      </h3>
-      <p className="text-secondary mx-auto mb-3" style={{ maxWidth: '46ch' }}>
+        <CheckIcon size={28} />
+      </span>
+      <h3 className="text-xl fw-700 mt-4 mb-2">{typograph(title)}</h3>
+      <p className="text-muted mb-3" style={{ maxWidth: "46ch" }}>
         {typograph(message)}
       </p>
 
       {txId && (
-        <div
-          className="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 mono-data mb-4"
-          style={{ background: '#090D16', border: '1px solid rgba(56, 189, 248, 0.3)', fontSize: '0.8125rem' }}
-        >
-          <span className="text-secondary">TX HASH:</span>
-          <span className="text-cyan-400 font-bold">{txId.slice(0, 16)}...{txId.slice(-8)}</span>
-          <button
-            type="button"
-            onClick={copyTx}
-            className="mfg-btn-ghost p-1"
-            style={{ minHeight: 28, minWidth: 28, fontSize: '0.75rem' }}
-            title="Скопировать хэш транзакции"
-          >
-            {copied ? '✓' : 'Копировать'}
+        <div className="inline-flex items-center gap-2 mono-data text-sm panel mb-4" style={{ padding: "0.5rem 0.75rem" }}>
+          <span className="text-muted">TX HASH:</span>
+          <span className="fw-700">
+            {txId.slice(0, 16)}…{txId.slice(-8)}
+          </span>
+          <button type="button" onClick={copyTx} className="btn btn-ghost icon-btn" aria-label="Скопировать хэш транзакции" title="Скопировать хэш транзакции">
+            {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
           </button>
         </div>
       )}
 
       {onDismiss && (
-        <div>
-          <button type="button" onClick={onDismiss} className="mfg-btn-secondary">
-            {typograph('Продолжить')}
-          </button>
-        </div>
+        <button type="button" onClick={onDismiss} className="btn btn-secondary">
+          {typograph("Продолжить")}
+        </button>
       )}
     </div>
   );
 }
 
+const TOAST_TONES = {
+  success: { icon: CheckIcon, bg: "var(--success-soft)", fg: "var(--success)", role: "status" },
+  danger: { icon: CloseIcon, bg: "var(--danger-soft)", fg: "var(--danger)", role: "alert" },
+  error: { icon: CloseIcon, bg: "var(--danger-soft)", fg: "var(--danger)", role: "alert" },
+  warning: { icon: AlertIcon, bg: "var(--warning-soft)", fg: "var(--warning)", role: "status" },
+  info: { icon: InfoIcon, bg: "var(--primary-soft)", fg: "var(--primary)", role: "status" },
+};
+
 /**
- * ToastContainer — Non-blocking system messages conforming to WCAG 2.2 AA.
+ * ToastContainer — неблокирующие системные сообщения, доступны по WCAG 2.2 AA.
  */
 export function ToastContainer({ toasts = [], onRemove }) {
   if (!toasts.length) return null;
 
   return (
-    <div className="mfg-toast-container" role="region" aria-label="Уведомления системы">
+    <div className="toast-stack" role="region" aria-label="Уведомления системы">
       {toasts.map((toast) => {
-        const isSuccess = toast.tone === 'success';
-        const isDanger = toast.tone === 'danger' || toast.tone === 'error';
-        const isWarning = toast.tone === 'warning';
-
-        const borderColor = isSuccess
-          ? 'rgba(16, 185, 129, 0.4)'
-          : isDanger
-          ? 'rgba(244, 63, 94, 0.4)'
-          : isWarning
-          ? 'rgba(245, 158, 11, 0.4)'
-          : 'rgba(56, 189, 248, 0.4)';
-
-        const icon = isSuccess ? '✓' : isDanger ? '✕' : isWarning ? '!' : 'ℹ';
-        const iconColor = isSuccess ? '#34D399' : isDanger ? '#FB7185' : isWarning ? '#FBBF24' : '#38BDF8';
+        const tone = TOAST_TONES[toast.tone] || TOAST_TONES.info;
+        const ToneIcon = tone.icon;
 
         return (
-          <div
-            key={toast.id}
-            className="mfg-toast"
-            style={{ borderColor }}
-            role={isDanger ? 'alert' : 'status'}
-          >
-            <div
-              className="d-grid place-items-center rounded-circle flex-shrink-0"
-              style={{ width: 28, height: 28, background: 'rgba(255, 255, 255, 0.08)', color: iconColor, fontWeight: 'bold' }}
-            >
-              {icon}
-            </div>
-            <div className="flex-grow-1">
-              <div className="fw-bold text-white mb-0.5" style={{ fontSize: '0.9rem' }}>
-                {typograph(toast.title || 'Сообщение системы')}
-              </div>
-              <div className="text-secondary" style={{ fontSize: '0.8125rem' }}>
-                {typograph(toast.message || '')}
-              </div>
-              {toast.txId && (
-                <div className="mt-1 mono-data text-cyan-400" style={{ fontSize: '0.75rem' }}>
-                  TX: {toast.txId.slice(0, 14)}...
-                </div>
-              )}
+          <div key={toast.id} className="toast" role={tone.role}>
+            <span className="toast-icon" style={{ background: tone.bg, color: tone.fg }} aria-hidden="true">
+              <ToneIcon size={14} />
+            </span>
+            <div className="flex-1">
+              <div className="fw-700 text-sm">{typograph(toast.title || "Сообщение системы")}</div>
+              {toast.message && <div className="text-sm" style={{ color: "var(--inverse-muted)" }}>{typograph(toast.message)}</div>}
+              {toast.txId && <div className="mt-1 mono-data text-xs" style={{ color: "#7dd3fc" }}>TX: {toast.txId.slice(0, 14)}…</div>}
             </div>
             {onRemove && (
               <button
                 type="button"
                 onClick={() => onRemove(toast.id)}
-                className="mfg-btn-ghost p-0 text-secondary"
-                style={{ minHeight: 28, minWidth: 28 }}
+                className="btn btn-ghost icon-btn"
+                style={{ color: "var(--inverse-muted)" }}
                 aria-label="Закрыть уведомление"
               >
-                ✕
+                <CloseIcon size={14} />
               </button>
             )}
           </div>

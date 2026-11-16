@@ -1,6 +1,13 @@
 import { useContext, useState } from "react";
 import { AtlantContext } from "../../../core/context.jsx";
 import { typograph } from "../../../core/typograph";
+import { Field, Input, Textarea } from "../../kit/Field.jsx";
+import { Select } from "../../kit/Select.jsx";
+
+const TYPE_OPTIONS = [
+  { value: "SUPPLY", label: "Supply — поставка готовой продукции" },
+  { value: "PRODUCTION", label: "Production — производственный заказ" },
+];
 
 export const CreateBid = () => {
   const { post, sender, products } = useContext(AtlantContext);
@@ -66,128 +73,83 @@ export const CreateBid = () => {
   };
 
   return (
-    <div className="mfg-card p-4 mb-4">
-      <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-15">
+    <div className="card card-lg mb-4">
+      <div className="flex justify-between items-center flex-wrap gap-3 mb-4 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
         <div>
-          <span className="mfg-badge-cyan mono-data mb-1">action: createBid</span>
-          <h3 className="fs-5 fw-bold text-white mb-0">
-            {typograph("Формирование внешнеторговой экспортной заявки (CreateBid)")}
-          </h3>
+          <span className="badge badge-primary mono-data mb-2" style={{ display: "inline-flex" }}>action: createBid</span>
+          <h3 className="text-lg fw-700">{typograph("Формирование внешнеторговой экспортной заявки")}</h3>
         </div>
-        <button
-          type="button"
-          onClick={fillSample}
-          className="mfg-btn-secondary py-1 px-3"
-          style={{ minHeight: 34, fontSize: "0.75rem" }}
-        >
-          Заполнить образец Инкотермс
+        <button type="button" onClick={fillSample} className="btn btn-secondary btn-sm">
+          {typograph("Заполнить образец Инкотермс")}
         </button>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="row g-3">
-          <div className="col-12 col-md-4">
-            <label className="mfg-label mono-data">ТИП ЗАЯВКИ (TYPE)</label>
-            <select
-              className="mfg-input mono-data"
-              value={form.type}
-              onChange={(e) => setForm({ ...form, type: e.target.value })}
-            >
-              <option value="SUPPLY">SUPPLY (Поставка готовой продукции)</option>
-              <option value="PRODUCTION">PRODUCTION (Производственный заказ)</option>
-            </select>
-          </div>
+        <div className="form-grid">
+          <Field label="Тип заявки" hint="type">
+            {(fp) => <Select {...fp} value={form.type} options={TYPE_OPTIONS} onChange={(v) => setForm({ ...form, type: v })} />}
+          </Field>
 
-          <div className="col-12 col-md-8">
-            <label className="mfg-label mono-data">АДРЕС ПОСТАВЩИКА / ЗАВОДА (TARGETADDRESS)</label>
-            <input
-              type="text"
-              required
-              className="mfg-input mono-data"
-              value={form.targetAddress}
-              onChange={(e) => setForm({ ...form, targetAddress: e.target.value })}
-            />
-          </div>
+          <Field label="Адрес поставщика / завода" hint="targetAddress" mono full>
+            {(fp) => (
+              <Input {...fp} type="text" required className="mono-data" value={form.targetAddress}
+                onChange={(e) => setForm({ ...form, targetAddress: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">НАИМЕНОВАНИЕ ПРОДУКТА</label>
-            <input
-              type="text"
-              required
-              className="mfg-input"
-              value={form.productName}
-              onChange={(e) => setForm({ ...form, productName: e.target.value })}
-            />
-          </div>
+          <Field label="Наименование продукта">
+            {(fp) => (
+              <Input {...fp} type="text" required value={form.productName}
+                onChange={(e) => setForm({ ...form, productName: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-3">
-            <label className="mfg-label mono-data">ОБЪЕМ (ШТ.)</label>
-            <input
-              type="number"
-              className="mfg-input mono-data"
-              value={form.volume}
-              onChange={(e) => setForm({ ...form, volume: e.target.value })}
-            />
-          </div>
+          <Field label="Объём, шт.">
+            {(fp) => (
+              <Input {...fp} type="number" className="mono-data" value={form.volume}
+                onChange={(e) => setForm({ ...form, volume: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-3">
-            <label className="mfg-label mono-data">СРОК ПОСТАВКИ</label>
-            <input
-              type="date"
-              className="mfg-input mono-data"
-              value={form.deliveryDate}
-              onChange={(e) => setForm({ ...form, deliveryDate: e.target.value })}
-            />
-          </div>
+          <Field label="Срок поставки">
+            {(fp) => (
+              <Input {...fp} type="date" className="mono-data" value={form.deliveryDate}
+                onChange={(e) => setForm({ ...form, deliveryDate: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">УСЛОВИЯ ПОСТАВКИ ИНКОТЕРМС (DELIVERYCOND)</label>
-            <input
-              type="text"
-              className="mfg-input mono-data"
-              value={form.deliveryCond}
-              onChange={(e) => setForm({ ...form, deliveryCond: e.target.value })}
-            />
-          </div>
+          <Field label="Условия поставки Инкотермс" mono>
+            {(fp) => (
+              <Input {...fp} type="text" className="mono-data" value={form.deliveryCond}
+                onChange={(e) => setForm({ ...form, deliveryCond: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12 col-md-6">
-            <label className="mfg-label mono-data">СУММА ЭСКРОУ-ОБЕСПЕЧЕНИЯ (WAVES)</label>
-            <input
-              type="text"
-              className="mfg-input mono-data"
-              value={form.totalEscrow}
-              onChange={(e) => setForm({ ...form, totalEscrow: e.target.value })}
-            />
-          </div>
+          <Field label="Сумма эскроу-обеспечения, WAVES" mono>
+            {(fp) => (
+              <Input {...fp} type="text" className="mono-data" value={form.totalEscrow}
+                onChange={(e) => setForm({ ...form, totalEscrow: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12">
-            <label className="mfg-label mono-data">ПУНКТ НАЗНАЧЕНИЯ И ТАМОЖЕННЫЙ ТЕРМИНАЛ</label>
-            <input
-              type="text"
-              className="mfg-input"
-              value={form.address}
-              onChange={(e) => setForm({ ...form, address: e.target.value })}
-            />
-          </div>
+          <Field label="Пункт назначения и таможенный терминал" full>
+            {(fp) => (
+              <Input {...fp} type="text" value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })} />
+            )}
+          </Field>
 
-          <div className="col-12">
-            <label className="mfg-label mono-data">ТЕХНИЧЕСКИЕ ТРЕБОВАНИЯ И ПРИЕМКА ISO 9001</label>
-            <textarea
-              rows={2}
-              className="mfg-input"
-              value={form.techReqs}
-              onChange={(e) => setForm({ ...form, techReqs: e.target.value })}
-            />
-          </div>
+          <Field label="Технические требования и приёмка ISO 9001" full>
+            {(fp) => (
+              <Textarea {...fp} rows={2} value={form.techReqs}
+                onChange={(e) => setForm({ ...form, techReqs: e.target.value })} />
+            )}
+          </Field>
         </div>
 
-        <div className="d-flex justify-content-end mt-4">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mfg-btn-primary"
-          >
-            <span>{submitting ? typograph("Подписание...") : typograph("Создать экспортную заявку")}</span>
+        <div className="flex justify-end mt-6">
+          <button type="submit" disabled={submitting} className="btn btn-primary">
+            {submitting ? typograph("Подписание…") : typograph("Создать экспортную заявку")}
           </button>
         </div>
       </form>

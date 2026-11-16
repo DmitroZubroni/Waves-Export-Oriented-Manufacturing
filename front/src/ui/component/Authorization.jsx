@@ -3,6 +3,8 @@ import { AtlantContext } from "../../core/context.jsx";
 import { typograph } from "../../core/typograph";
 import ManufacturingExportHeroArt from "./ManufacturingExportHeroArt.jsx";
 import IsoQualityBadge from "./art/IsoQualityBadge.jsx";
+import { Field, Input } from "../kit/Field.jsx";
+import { ArrowRightIcon, CertificateIcon } from "../kit/icons.jsx";
 
 const Authorization = () => {
   const { login, organizations } = useContext(AtlantContext);
@@ -15,6 +17,7 @@ const Authorization = () => {
     mode: "demo",
   });
 
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e) => {
@@ -37,34 +40,25 @@ const Authorization = () => {
   };
 
   return (
-    <div className="mfg-container">
-      <div className="row align-items-center g-5 py-4">
-        {/* Left Column: Hero Art & Technical Overview */}
-        <div className="col-12 col-lg-6">
-          <div className="d-flex align-items-center gap-2 mb-3">
-            <span className="mfg-badge-cyan">
-              <span className="mfg-diode mfg-diode-cyan" />
-              <span>{typograph("Waves Enterprise Protocol")}</span>
+    <div className="container">
+      <div className="grid-cards" style={{ gridTemplateColumns: "minmax(0, 1.05fr) minmax(0, 1fr)", alignItems: "start" }}>
+        {/* Left column: overview and hero art */}
+        <div>
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <span className="badge badge-primary">
+              <span className="diode diode-primary diode-live" />
+              Waves Enterprise Protocol
             </span>
-            <span className="mfg-badge-amber">
-              <span>★</span>
-              <span>{typograph("ISO 9001:2015 Стандарт")}</span>
-            </span>
+            <span className="badge badge-accent">ISO 9001:2015 Стандарт</span>
           </div>
 
-          <h1
-            className="fw-bold text-white mb-3 tracking-tight"
-            style={{ fontSize: "clamp(1.85rem, 3.8vw, 2.5rem)", lineHeight: 1.15 }}
-          >
-            {typograph("Система учета экспортно-ориентированного производства")}
+          <h1 className="fw-700" style={{ fontSize: "clamp(1.85rem, 3.8vw, 2.5rem)", lineHeight: 1.15 }}>
+            {typograph("Система учёта экспортно-ориентированного производства")}
           </h1>
 
-          <p
-            className="text-secondary mb-4 leading-relaxed"
-            style={{ fontSize: "1rem", maxWidth: "54ch" }}
-          >
+          <p className="text-muted mt-3 mb-4 max-prose" style={{ fontSize: "1rem" }}>
             {typograph(
-              "Непрерывная криптографическая прослеживаемость партий сырья, автоматическая верификация спецификаций качества и юридически значимое оформление экспортных партий на базе распределенного реестра Waves."
+              "Непрерывная криптографическая прослеживаемость партий сырья, автоматическая верификация спецификаций качества и юридически значимое оформление экспортных партий на базе распределённого реестра Waves."
             )}
           </p>
 
@@ -72,159 +66,124 @@ const Authorization = () => {
             <ManufacturingExportHeroArt width="100%" height="auto" />
           </div>
 
-          {/* Key Industrial Standard Badges */}
-          <div className="row g-3">
-            <div className="col-6">
-              <div className="mfg-card p-3 h-100">
-                <div className="fw-bold text-white mb-1" style={{ fontSize: "0.875rem" }}>
-                  ISO 9001:2015
-                </div>
-                <div className="text-secondary" style={{ fontSize: "0.75rem" }}>
-                  Сертификация партий продукции и неразрушающий контроль
-                </div>
-              </div>
+          <div className="grid-cards" style={{ gridTemplateColumns: "1fr 1fr" }}>
+            <div className="card">
+              <div className="fw-700 mb-1">ISO 9001:2015</div>
+              <div className="text-muted text-sm">Сертификация партий продукции и неразрушающий контроль</div>
             </div>
-            <div className="col-6">
-              <div className="mfg-card p-3 h-100">
-                <div className="fw-bold text-white mb-1" style={{ fontSize: "0.875rem" }}>
-                  Waves Smart Contract
-                </div>
-                <div className="text-secondary" style={{ fontSize: "0.75rem" }}>
-                  Тип транзакции 104, мультисиг-акцепт и торговый эскроу
-                </div>
-              </div>
+            <div className="card">
+              <div className="fw-700 mb-1">Waves Smart Contract</div>
+              <div className="text-muted text-sm">Тип транзакции 104, мультисиг-акцепт и торговый эскроу</div>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Auth Form & One-Click Role Selection */}
-        <div className="col-12 col-lg-6">
-          <div className="mfg-card p-4 p-md-5">
-            <div className="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary border-opacity-20">
-              <div>
-                <h2 className="fs-4 fw-bold text-white mb-1">
-                  {typograph("Авторизация узла производства")}
-                </h2>
-                <p className="text-secondary mb-0" style={{ fontSize: "0.8125rem" }}>
-                  {typograph("Выберите роль контрагента или укажите ключи")}
-                </p>
-              </div>
-              <IsoQualityBadge width={56} height={56} />
+        {/* Right column: role selection is the primary path; manual keys are secondary */}
+        <div className="card card-lg">
+          <div className="flex items-center justify-between gap-3 mb-4 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+            <div>
+              <h2 className="text-xl fw-700 mb-1">{typograph("Вход в реестр производства")}</h2>
+              <p className="text-muted text-sm">{typograph("Выберите роль контрагента для демонстрации")}</p>
             </div>
+            <IsoQualityBadge width={52} height={52} />
+          </div>
 
-            {/* Quick Demo Role Cards (Studio «Калибр» Instant Start) */}
-            <div className="mb-4">
-              <div className="mfg-label mb-2">
-                {typograph("БЫСТРЫЙ ВХОД ДЛЯ ДЕМОНСТРАЦИИ (ВЫБЕРИТЕ РОЛЬ):")}
-              </div>
-              <div className="d-flex flex-column gap-2">
-                {organizations.map((org) => (
-                  <button
-                    key={org.orgWallet}
-                    type="button"
-                    onClick={() => handleQuickRole(org)}
-                    className="mfg-card p-2.5 text-start border-0 bg-secondary bg-opacity-10 hover-bg-opacity-20 d-flex align-items-center justify-content-between transition-all"
-                  >
-                    <div>
-                      <div className="fw-bold text-white" style={{ fontSize: "0.875rem" }}>
-                        {org.name}
-                      </div>
-                      <div className="text-secondary mono-data" style={{ fontSize: "0.75rem" }}>
-                        {org.userRole} · {org.region}
-                      </div>
-                    </div>
-                    <span className="mfg-btn-primary py-1 px-3" style={{ minHeight: 32, fontSize: "0.75rem" }}>
-                      Войти →
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="position-relative my-4 text-center">
-              <hr className="border-secondary border-opacity-20" />
-              <span
-                className="position-absolute top-50 start-50 translate-middle px-3 mono-data text-secondary"
-                style={{ background: "#0F172A", fontSize: "0.75rem" }}
-              >
-                ИЛИ РУЧНОЙ ВВОД КЛЮЧЕЙ
-              </span>
-            </div>
-
-            {/* Manual Form */}
-            <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
-              <div>
-                <label htmlFor="auth-sender" className="mfg-label mono-data">
-                  {typograph("АДРЕС ОТПРАВИТЕЛЯ (SENDER BASE58)")}
-                </label>
-                <input
-                  id="auth-sender"
-                  type="text"
-                  required
-                  className="mfg-input mono-data"
-                  placeholder="3P..."
-                  value={form.sender}
-                  onChange={(e) => setForm({ ...form, sender: e.target.value })}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="auth-contract" className="mfg-label mono-data">
-                  {typograph("ID СМАРТ-КОНТРАКТА WAVES (CONTRACT ID)")}
-                </label>
-                <input
-                  id="auth-contract"
-                  type="text"
-                  required
-                  className="mfg-input mono-data"
-                  placeholder="Base58 ID контракта..."
-                  value={form.contractId}
-                  onChange={(e) => setForm({ ...form, contractId: e.target.value })}
-                />
-              </div>
-
-              <div className="row g-3">
-                <div className="col-6">
-                  <label htmlFor="auth-port" className="mfg-label mono-data">
-                    {typograph("ПОРТ УЗЛА")}
-                  </label>
-                  <input
-                    id="auth-port"
-                    type="text"
-                    className="mfg-input mono-data"
-                    placeholder="6882"
-                    value={form.url}
-                    onChange={(e) => setForm({ ...form, url: e.target.value })}
-                  />
-                </div>
-                <div className="col-6">
-                  <label htmlFor="auth-pass" className="mfg-label mono-data">
-                    {typograph("ПАРОЛЬ КЛЮЧА")}
-                  </label>
-                  <input
-                    id="auth-pass"
-                    type="password"
-                    className="mfg-input"
-                    placeholder="••••••••"
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  />
-                </div>
-              </div>
-
+          <div className="stack-3" aria-label="Роли контрагентов для демонстрационного входа">
+            {organizations.map((org) => (
               <button
-                type="submit"
-                disabled={isSubmitting}
-                className="mfg-btn-primary w-100 mt-2 py-3"
+                key={org.orgWallet}
+                type="button"
+                onClick={() => handleQuickRole(org)}
+                className="card flex items-center justify-between gap-3 text-left w-full"
+                style={{ cursor: "pointer", minHeight: 44, border: "1px solid var(--border)" }}
               >
                 <span>
-                  {isSubmitting
-                    ? typograph("Подключение к реестру...")
-                    : typograph("Войти в реестр Waves")}
+                  <span className="fw-700" style={{ display: "block" }}>{org.name}</span>
+                  <span className="mono-data text-xs text-muted">
+                    {org.userRole} · {org.region}
+                  </span>
+                </span>
+                <span className="btn btn-primary btn-sm" style={{ pointerEvents: "none" }}>
+                  Войти
+                  <ArrowRightIcon size={16} />
                 </span>
               </button>
-            </form>
+            ))}
           </div>
+
+          <button
+            type="button"
+            onClick={() => setAdvancedOpen((o) => !o)}
+            className="btn btn-ghost mt-4"
+            aria-expanded={advancedOpen}
+            aria-controls="manual-auth-form"
+          >
+            <CertificateIcon size={16} />
+            {advancedOpen ? typograph("Скрыть ручной ввод ключей") : typograph("Ввести ключи вручную")}
+          </button>
+
+          {advancedOpen && (
+            <form id="manual-auth-form" onSubmit={handleSubmit} className="stack-4 mt-4">
+              <Field label="Адрес отправителя (Sender, Base58)" mono>
+                {(fieldProps) => (
+                  <Input
+                    {...fieldProps}
+                    type="text"
+                    required
+                    className="mono-data"
+                    placeholder="3P..."
+                    value={form.sender}
+                    onChange={(e) => setForm({ ...form, sender: e.target.value })}
+                  />
+                )}
+              </Field>
+
+              <Field label="ID смарт-контракта Waves (Contract ID)" mono>
+                {(fieldProps) => (
+                  <Input
+                    {...fieldProps}
+                    type="text"
+                    required
+                    className="mono-data"
+                    placeholder="Base58 ID контракта…"
+                    value={form.contractId}
+                    onChange={(e) => setForm({ ...form, contractId: e.target.value })}
+                  />
+                )}
+              </Field>
+
+              <div className="form-grid">
+                <Field label="Порт узла" mono>
+                  {(fieldProps) => (
+                    <Input
+                      {...fieldProps}
+                      type="text"
+                      className="mono-data"
+                      placeholder="6882"
+                      value={form.url}
+                      onChange={(e) => setForm({ ...form, url: e.target.value })}
+                    />
+                  )}
+                </Field>
+                <Field label="Пароль ключа" hint="Хранится только в памяти браузера на время сессии демо-стенда.">
+                  {(fieldProps) => (
+                    <Input
+                      {...fieldProps}
+                      type="password"
+                      autoComplete="current-password"
+                      placeholder="••••••••"
+                      value={form.password}
+                      onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    />
+                  )}
+                </Field>
+              </div>
+
+              <button type="submit" disabled={isSubmitting} className="btn btn-secondary w-full">
+                {isSubmitting ? typograph("Подключение к реестру…") : typograph("Войти с указанными ключами")}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>
