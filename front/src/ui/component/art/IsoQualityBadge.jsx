@@ -1,71 +1,14 @@
-import React from 'react';
-
-/**
- * IsoQualityBadge — Studio «Калибр» ISO 9001:2015 Vector Quality Seal.
- */
+/** An engraved inspection plate, sized to the existing quality-mark slot. */
 export default function IsoQualityBadge({ width = 72, height = 72, className = '' }) {
   return (
-    <svg
-      viewBox="0 0 72 72"
-      width={width}
-      height={height}
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      role="img"
-      aria-label="Сертификат ISO 9001:2015"
-    >
-      <defs>
-        <linearGradient id="badgeAmberGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#F59E0B" />
-          <stop offset="100%" stopColor="#D97706" />
-        </linearGradient>
-      </defs>
-
-      {/* Outer Gear / Seal Rim */}
-      <circle cx="36" cy="36" r="33" fill="#0F172A" stroke="url(#badgeAmberGrad)" strokeWidth="2" />
-      <circle cx="36" cy="36" r="28" fill="none" stroke="#FDE68A" strokeWidth="0.8" strokeDasharray="2 2" />
-
-      {/* ISO Quality Star Accent */}
-      <circle cx="36" cy="14" r="1.5" fill="#F59E0B" />
-      <circle cx="36" cy="58" r="1.5" fill="#F59E0B" />
-      <circle cx="14" cy="36" r="1.5" fill="#F59E0B" />
-      <circle cx="58" cy="36" r="1.5" fill="#F59E0B" />
-
-      {/* Central Typography */}
-      <text
-        x="36"
-        y="32"
-        fill="#FDE68A"
-        fontSize="9"
-        fontWeight="bold"
-        fontFamily="monospace"
-        textAnchor="middle"
-        letterSpacing="0.05em"
-      >
-        ISO 9001
-      </text>
-      <text
-        x="36"
-        y="42"
-        fill="#38BDF8"
-        fontSize="5"
-        fontWeight="bold"
-        fontFamily="sans-serif"
-        textAnchor="middle"
-      >
-        QUALITY QA
-      </text>
-      <text
-        x="36"
-        y="50"
-        fill="#94A3B8"
-        fontSize="4"
-        fontFamily="monospace"
-        textAnchor="middle"
-      >
-        EXPORT PASS
-      </text>
+    <svg viewBox="0 0 72 72" width={width} height={height} fill="none" className={className} role="img" aria-label="Сертификат ISO 9001:2015">
+      <path d="M8 5h56l3 3v56l-3 3H8l-3-3V8Z" fill="#13263a" stroke="#d7ac53" strokeWidth="1.5" />
+      <path d="M12 10h48M12 62h48M10 12v48M62 12v48" stroke="#627b90" strokeWidth=".7" />
+      {[12,60].flatMap(x => [12,60].map(y => <path key={`${x}-${y}`} d={`M${x-1} ${y-1}l2 2m0-2-2 2`} stroke="#d7ac53" strokeWidth="1" />))}
+      <path d="M25 19h22v8H25zM29 17v12m14-12v12M31 23l3 3 7-7" stroke="#d7ac53" strokeWidth="1.3" />
+      <text x="36" y="40" fill="#f4d58d" fontSize="10" fontWeight="700" fontFamily="sans-serif" textAnchor="middle">ISO 9001</text>
+      <path d="M17 46h38" stroke="#627b90" />
+      <text x="36" y="55" fill="#c9deec" fontSize="6" fontFamily="sans-serif" textAnchor="middle">2015 / QA</text>
     </svg>
   );
 }

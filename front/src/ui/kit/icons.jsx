@@ -156,3 +156,10 @@ export const CertificateIcon = (p) => (
     <path d="M10.5 18.3 9 21.5M13.5 18.3 15 21.5" />
   </Icon>
 );
+
+// Inspection caliper and approval cut, shared by the quality status.
+export const InspectionIcon = (p) => (
+  <Icon {...p}>
+    <path d="M4 5h16M7 3v10h4V5m6-2v10h-4V5M9 19l3 3 7-8" />
+  </Icon>
+);

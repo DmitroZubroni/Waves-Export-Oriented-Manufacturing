@@ -1,3 +1,4 @@
+import { InspectionIcon } from '../kit/icons.jsx';
 import { useContext, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Header from "../component/Header.jsx";
@@ -116,7 +117,7 @@ const UserInfo = () => {
                   <span>{typograph("Узел синхронизирован")}</span>
                 </span>
                 <span className="badge badge-accent">
-                  <span>★</span>
+                  <InspectionIcon size={14} />
                   <span>ISO 9001:2015</span>
                 </span>
               </div>
