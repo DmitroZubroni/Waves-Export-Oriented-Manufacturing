@@ -40,7 +40,7 @@ const Authorization = () => {
   };
 
   return (
-    <div className="container">
+    <main id="main-content" className="container">
       <div className="grid-cards" style={{ gridTemplateColumns: "minmax(0, 1.05fr) minmax(0, 1fr)", alignItems: "start" }}>
         {/* Left column: overview and hero art */}
         <div>
@@ -186,7 +186,7 @@ const Authorization = () => {
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

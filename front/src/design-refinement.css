@@ -49,3 +49,17 @@ h1 { font-size: clamp(30px, 3vw, 48px); max-width: 30ch; }
   .brand-title { font-size: 16px; }
   .btn { white-space: normal; }
 }
+/* Review pass 2: long shipping terms and card actions remain inside the grid. */
+.badge { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+.card > div > .flex, .card > .flex { flex-wrap: wrap; }
+.card .flex > div { min-width: 0; }
+.card .flex > .badge { flex-shrink: 1; }
+.field-label { font-family: var(--font-sans); }
+.cabinet .card p { font-size: 16px !important; line-height: 1.5; }
+@media (max-width: 599px) {
+  .cabinet > .flex:first-child { flex-wrap: wrap; }
+}
+.passport-dialog { border: 0; padding: 0; background: transparent; color: var(--text); width: min(560px, calc(100% - 32px)); max-height: 85dvh; overflow: auto; }
+.passport-dialog::backdrop { background: #0b1220bb; }
+.skip-link { top: 8px; transform: translate(-50%, calc(-100% - 16px)); }
+.skip-link:focus-visible { top: 8px; transform: translateX(-50%); }

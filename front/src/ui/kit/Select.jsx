@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useLayoutEffect, useId, useRef, useState } from "react";
 import { ChevronDownIcon, CheckIcon } from "./icons.jsx";
 import { useDismiss } from "./useDismiss.js";
 
@@ -27,6 +27,7 @@ export function Select({
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [openUp, setOpenUp] = useState(false);
+  const [listHeight, setListHeight] = useState(280);
   const rootRef = useRef(null);
   const listRef = useRef(null);
   const generatedId = useId();
@@ -38,16 +39,22 @@ export function Select({
   const close = () => setOpen(false);
   useDismiss(open, close, rootRef);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return;
     const currentIndex = options.findIndex((option) => option.value === value);
     setActiveIndex(currentIndex >= 0 ? currentIndex : 0);
 
     if (rootRef.current) {
       const rect = rootRef.current.getBoundingClientRect();
-      setOpenUp(window.innerHeight - rect.bottom < 280 && rect.top > 280);
+      const header = document.querySelector('.app-header');
+      const edge = header && getComputedStyle(header).position === 'sticky' ? header.getBoundingClientRect().bottom : 0;
+      const below = window.innerHeight - rect.bottom - 8;
+      const above = rect.top - edge - 8;
+      const up = below < 280 && above > below;
+      setOpenUp(up);
+      setListHeight(Math.max(44, Math.min(280, up ? above : below)));
     }
-    const frame = requestAnimationFrame(() => listRef.current?.focus());
+    const frame = requestAnimationFrame(() => listRef.current?.focus({ preventScroll: true }));
     return () => cancelAnimationFrame(frame);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -57,6 +64,7 @@ export function Select({
     if (!option || option.disabled) return;
     onChange(option.value);
     setOpen(false);
+    rootRef.current?.querySelector("button")?.focus();
   };
 
   const onTriggerKeyDown = (event) => {
@@ -69,6 +77,12 @@ export function Select({
 
   const onListKeyDown = (event) => {
     switch (event.key) {
+      case "Escape":
+        event.preventDefault();
+        event.stopPropagation();
+        setOpen(false);
+        rootRef.current?.querySelector("button")?.focus();
+        break;
       case "ArrowDown":
         event.preventDefault();
         setActiveIndex((i) => Math.min(options.length - 1, i + 1));
@@ -124,6 +138,7 @@ export function Select({
         <ul
           className={`k-select-list ${openUp ? "open-up" : ""}`}
           role="listbox"
+          style={{ maxHeight: listHeight }}
           id={listboxId}
           tabIndex={-1}
           ref={listRef}

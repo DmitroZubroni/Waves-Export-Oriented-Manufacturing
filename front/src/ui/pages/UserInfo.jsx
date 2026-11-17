@@ -9,7 +9,7 @@ import IsoQualityBadge from "../component/art/IsoQualityBadge.jsx";
 
 const UserInfo = () => {
   const {
-        sender,
+    sender,
     organizations,
     products,
     bids,
