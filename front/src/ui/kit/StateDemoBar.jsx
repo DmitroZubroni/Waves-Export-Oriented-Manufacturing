@@ -11,6 +11,7 @@ export function StateDemoBar({
   emptyOn,
   onToggleEmpty,
 }) {
+  if (!(["review", "dev"].some(key => new URLSearchParams(window.location.search).has(key)))) return null;
   return (
     <div className="flex justify-end items-center gap-2 mb-3 flex-wrap">
       <span className="mono-data text-xs text-muted">Проверка состояний (У1):</span>

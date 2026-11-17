@@ -77,7 +77,7 @@ const UserInfo = () => {
 
       <main id="main-content" className="container cabinet">
         {/* State Simulator Controls (for Studio «Калибр» Review) */}
-        <div className="flex justify-end gap-2 mb-3">
+        {["review", "dev"].some(key => new URLSearchParams(window.location.search).has(key)) && (<div className="flex justify-end gap-2 mb-3">
           <span className="text-muted mono-data self-center" style={{ fontSize: "0.75rem" }}>
             Демонстрация состояний:
           </span>
@@ -100,7 +100,7 @@ const UserInfo = () => {
           >
             {simulatedError ? "Сбросить ошибку" : "Тест Ошибки"}
           </button>
-        </div>
+        </div>)}
 
         {/* Counterparty Passport Card */}
         <section className="card p-4 cabinet-passport mb-4">
